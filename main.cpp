@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// Variables
 	float timeStep = 1000.0 / fps;
-	int timeNow = clock(), timeSleep, timeStart = timeNow, timeEnd = timeStart + 1000, step = 0;
+	int timeNow = clock(), timeSleep, timeStart = timeNow, timeEnd = timeStart + 1000, frame = 0;
 	MSG msg;
 
 	// Main cycle
@@ -61,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (!GM_transition())
 			GM_draw();
 
-		if ((timeSleep = timeStart + timeStep * ++step - (timeNow = clock())) > 0)
+		if ((timeSleep = timeStart + timeStep * ++frame - (timeNow = clock())) > 0)
 		{
 			timeNow += timeSleep;
 			Sleep(timeSleep);
@@ -69,8 +69,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		if (timeEnd <= timeNow)
 		{
-			fps = step;
-			step = 0;
+			fps = frame;
+			frame = 0;
 			timeStart = timeNow;
 			timeEnd = timeNow + 1000;
 			//window.setTitle(str(fps));
