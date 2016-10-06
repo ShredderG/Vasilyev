@@ -1,3 +1,4 @@
+
 // No warnings
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -6,13 +7,16 @@
 #pragma comment (lib, "glu32.lib")
 
 // Includes
+#include <stdio.h>
 #include <windows.h>
 #include <math.h>
 #include <time.h>
+
 #include <string>
-#include <gl/glew.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+//#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
 using namespace std;
 
 // Engine
@@ -47,7 +51,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float timeStep = 1000.0 / fps;
 	int timeNow = clock(), timeSleep, timeStart = timeNow, timeEnd = timeStart + 1000, step = 0;
 	MSG msg;
-
+	//genmap("map2.bmp");
+	genmap("map2x2.bmp");
+	//genmap("map10x10.bmp",10,10);
 	// Main cycle
 	while (GM_game)
 	{
@@ -58,6 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		GM_step();
+		
 		if (!GM_transition())
 			GM_draw();
 
