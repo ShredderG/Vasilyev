@@ -9,7 +9,7 @@ typedef unsigned int   uint;
 #define GM_FULL     false
 #define GM_MAXIMIZE false
 #define GM_MINIMIZE false
-#define GM_MOUSE    true
+#define GM_MOUSE    false
 #define GM_NOBORDER false
 uint fps = GM_FPS;
 bool GM_game = true;
