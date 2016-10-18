@@ -16,7 +16,7 @@
 //#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glext.h>
+//#include <GL/glext.h>
 using namespace std;
 
 // Engine
@@ -46,13 +46,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		GM_WIDTH, GM_HEIGHT)) return 0;
 
 	GM_loadTextures();
+	room.set(r_start);
 
 	// Variables
 	float timeStep = 1000.0 / fps;
 	int timeNow = clock(), timeSleep, timeStart = timeNow, timeEnd = timeStart + 1000, frame = 0;
 	MSG msg;
 	//genmap("map2.bmp");
-	genmap("map2x2.bmp");
+	//genmap("map2x2.bmp");
 	//genmap("map10x10.bmp",10,10);
 	// Main cycle
 	while (GM_game)
