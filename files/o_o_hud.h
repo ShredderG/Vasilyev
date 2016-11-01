@@ -3,7 +3,6 @@ struct GM_OBJECT_o_hud : public GM_object
 
 	static int GM_count;
 	GM_OBJECT_o_hud(float GM_x, float GM_y, float GM_z);
-	~GM_OBJECT_o_hud();
 	void destroy();
 	void GM_step();
 	void GM_draw();

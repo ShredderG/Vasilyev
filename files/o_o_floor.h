@@ -1,9 +1,9 @@
 struct GM_OBJECT_o_floor : public GM_object
 {
+	int texture;
 
 	static int GM_count;
 	GM_OBJECT_o_floor(float GM_x, float GM_y, float GM_z);
-	~GM_OBJECT_o_floor();
 	void destroy();
 	void GM_step();
 	void GM_draw();
