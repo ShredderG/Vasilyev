@@ -19,7 +19,7 @@ struct GM_object
 {
 	GM_object *GM_left, *GM_right;
 	float x, y, z;
-	bool GM_active, solid, persistent;
+	bool GM_active, persistent;
 	int priority;
 
 	// constructor
