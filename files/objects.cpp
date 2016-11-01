@@ -1,11 +1,14 @@
-#define GM_OBJECT_ID_o_wall   3
-#define GM_OBJECT_ID_o_item   7
-#define GM_OBJECT_ID_o_hud    6
-#define GM_OBJECT_ID_o_hero   1
-#define GM_OBJECT_ID_o_floor  2
-#define GM_OBJECT_ID_o_enemy  8
-#define GM_OBJECT_ID_o_door   9
-#define GM_OBJECT_ID_o_bullet 5
+enum
+{
+	GM_OBJECT_ID_o_wall,
+	GM_OBJECT_ID_o_item,
+	GM_OBJECT_ID_o_hud,
+	GM_OBJECT_ID_o_hero,
+	GM_OBJECT_ID_o_floor,
+	GM_OBJECT_ID_o_enemy,
+	GM_OBJECT_ID_o_door,
+	GM_OBJECT_ID_o_bullet
+};
 
 #include "o_o_wall.h"
 #include "o_o_item.h"
