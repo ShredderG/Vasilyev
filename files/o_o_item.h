@@ -1,5 +1,16 @@
+enum itemType
+{
+	ITEM_AMMO,
+	ITEM_MEDKIT,
+	ITEM_KEY
+};
+
 struct GM_OBJECT_o_item : public GM_object
 {
+	int type;
+
+	const int AMMO = 10;
+	const int MEDKIT = 10;
 
 	static int GM_count;
 	GM_OBJECT_o_item(float GM_x, float GM_y, float GM_z);
