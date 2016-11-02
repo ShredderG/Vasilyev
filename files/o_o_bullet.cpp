@@ -9,8 +9,6 @@ GM_OBJECT_o_bullet::GM_OBJECT_o_bullet(float GM_x, float GM_y, float GM_z)
 	z = GM_z;
 
 	xDir = yDir = 0;
-	speed = 0.1;
-	size = 0.05;
 }
 
 void GM_OBJECT_o_bullet::destroy()
@@ -29,9 +27,9 @@ void GM_OBJECT_o_bullet::destroy()
 
 void GM_OBJECT_o_bullet::GM_step()
 {
-	x += stepX(speed, xDir, yDir);
-	y += stepY(speed, xDir, yDir);
-	z += stepZ(speed, xDir, yDir);
+	x += stepX(SPEED, xDir, yDir);
+	y += stepY(SPEED, xDir, yDir);
+	z += stepZ(SPEED, xDir, yDir);
 
 	// collision with floor/roof
 	if (z < 0) destroy();
@@ -63,6 +61,40 @@ void GM_OBJECT_o_bullet::GM_step()
 							break;
 						}
 	}
+
+	// collision with hero
+	with(o_hero) // на случай, если героя не существует
+	{
+		if (o_hero->hp > 0)
+			if (x > o_hero->x - o_hero->SIZE)
+				if (y > o_hero->y - o_hero->SIZE)
+					if (x < o_hero->x + o_hero->SIZE)
+						if (y < o_hero->y + o_hero->SIZE)
+							if (z > o_hero->z)
+								if (z < o_hero->z + o_hero->HEIGHT)
+								{
+									o_hero->getDamage(DAMAGE);
+									destroy();
+									break;
+								}
+	}
+
+	// collision with enemy
+	with(o_enemy)
+	{
+		if (o_enemy->hp > 0)
+			if (x > o_enemy->x - o_enemy->SIZE)
+				if (y > o_enemy->y - o_enemy->SIZE)
+					if (x < o_enemy->x + o_enemy->SIZE)
+						if (y < o_enemy->y + o_enemy->SIZE)
+							if (z > o_enemy->z)
+								if (z < o_enemy->z + o_enemy->HEIGHT)
+								{
+									o_enemy->getDamage(DAMAGE);
+									destroy();
+									break;
+								}
+	}
 }
 
 void GM_OBJECT_o_bullet::GM_draw()
@@ -70,12 +102,12 @@ void GM_OBJECT_o_bullet::GM_draw()
 	glDisable(GL_TEXTURE_2D); // можно удалить, если добавить текстуру
 
 	float
-		x1 = x - stepX(size, o_hero->xDir + 90),
-		x2 = x + stepX(size, o_hero->xDir + 90),
-		y1 = y - stepY(size, o_hero->xDir + 90),
-		y2 = y + stepY(size, o_hero->xDir + 90),
-		z1 = z - size,
-		z2 = z + size;
+		x1 = x - stepX(SIZE, o_hero->xDir + 90),
+		x2 = x + stepX(SIZE, o_hero->xDir + 90),
+		y1 = y - stepY(SIZE, o_hero->xDir + 90),
+		y2 = y + stepY(SIZE, o_hero->xDir + 90),
+		z1 = z - SIZE,
+		z2 = z + SIZE;
 
 	// текстуру надо добавить
 	glBegin(GL_QUADS);

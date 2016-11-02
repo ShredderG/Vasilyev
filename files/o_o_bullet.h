@@ -1,8 +1,10 @@
 struct GM_OBJECT_o_bullet : public GM_object
 {
-	float xDir, yDir;
-	float speed;
-	float size;
+	float xDir, yDir; // переопределяются после создания
+
+	const float SPEED = 0.1;
+	const float SIZE = 0.05;
+	const int DAMAGE = 10;
 
 	static int GM_count;
 	GM_OBJECT_o_bullet(float GM_x, float GM_y, float GM_z);
