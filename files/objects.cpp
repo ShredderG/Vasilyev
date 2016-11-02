@@ -1,4 +1,4 @@
-enum
+enum objectId
 {
 	GM_OBJECT_ID_o_wall,
 	GM_OBJECT_ID_o_item,
@@ -30,7 +30,6 @@ GM_object *objectCreate(float x, float y, float z, GM_object *GM_ptr)
 	if (GM_ptr == o_enemy) GM_new = new GM_OBJECT_o_enemy(x, y, z);
 	if (GM_ptr == o_door) GM_new = new GM_OBJECT_o_door(x, y, z);
 	if (GM_ptr == o_bullet) GM_new = new GM_OBJECT_o_bullet(x, y, z);
-	//if (GM_ptr < (GM_object*)0x0000FFFF) return NULL;
 	GM_new->GM_insert(GM_ptr);
 	return GM_new;
 }
