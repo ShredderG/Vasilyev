@@ -10,11 +10,11 @@ GM_OBJECT_o_hero::GM_OBJECT_o_hero(float GM_x, float GM_y, float GM_z)
 
 	xDir = 0;
 	yDir = 90;
-	height = 0.6;
-	ammo = 20;
 	shootDelay = 0;
-	size = 0.25;
-	speed = 0.05;
+
+	hp = HP_MAX;
+	ammo = AMMO_MAX;
+	ammoTotal = 5;
 	key = false;
 
 	mouse.move(window.width / 2, window.height / 2);
@@ -39,26 +39,39 @@ bool GM_OBJECT_o_hero::placeFree(float x, float y)
 {
 	with(o_wall)
 	{
-		if (x + size > o_wall->x)
-			if (y + size > o_wall->y)
-				if (x - size < o_wall->x + 1)
-					if (y - size < o_wall->y + 1)
+		if (x + SIZE > o_wall->x)
+			if (y + SIZE > o_wall->y)
+				if (x - SIZE < o_wall->x + 1)
+					if (y - SIZE < o_wall->y + 1)
 						return false;
 	}
 
 	with(o_door)
 	{
 		if (!o_door->opened || o_door->position != 1)
-			if (x + size > o_door->x)
-				if (y + size > o_door->y)
-					if (x - size < o_door->x + 1)
-						if (y - size < o_door->y + 1)
+			if (x + SIZE > o_door->x)
+				if (y + SIZE > o_door->y)
+					if (x - SIZE < o_door->x + 1)
+						if (y - SIZE < o_door->y + 1)
 							return false;
 	}
 
 	return true;
 }
 
+// taking damage
+void GM_OBJECT_o_hero::getDamage(int damage)
+{
+	hp -= damage;
+
+	// + red screen
+
+	if (hp < 0)
+	{
+		hp = 0;
+		showMessage("You are dead for good!"); // надо поменять
+	}
+}
 
 void GM_OBJECT_o_hero::GM_step()
 {
@@ -101,8 +114,8 @@ void GM_OBJECT_o_hero::GM_step()
 			xPrevious = x,
 			yPrevious = y;
 
-		x += stepX(speed, direction);
-		y += stepY(speed, direction);
+		x += stepX(SPEED, direction);
+		y += stepY(SPEED, direction);
 
 		// Collision with wall
 		if (!placeFree(x, y))
@@ -124,9 +137,9 @@ void GM_OBJECT_o_hero::GM_step()
 			if (ammo > 0)
 			{
 				objectCreate(
-					x + stepX(size, xDir, yDir),
-					y + stepY(size, xDir, yDir),
-					z + stepZ(size, xDir, yDir) + height - 0.1,
+					x + stepX(SIZE, xDir, yDir),
+					y + stepY(SIZE, xDir, yDir),
+					z + stepZ(SIZE, xDir, yDir) + HEIGHT - 0.1,
 					o_bullet);
 
 				o_bullet->xDir = xDir;
@@ -169,6 +182,55 @@ void GM_OBJECT_o_hero::GM_step()
 		}
 	}
 
+	// taking items
+	with(o_item)
+	{
+		if (x + SIZE > o_item->x)
+			if (y + SIZE > o_item->y)
+				if (x - SIZE < o_item->x)
+					if (y - SIZE < o_item->y)
+					{
+						// get item type
+						switch (o_item->type)
+						{
+							// ammo
+						case ITEM_AMMO:
+							ammoTotal += o_item->AMMO;
+							o_item->destroy();
+							break;
+
+							// medkit
+						case ITEM_MEDKIT:
+							if (hp < HP_MAX)
+							{
+								hp += o_item->MEDKIT;
+								if (hp > HP_MAX) hp = HP_MAX;
+								o_item->destroy();
+							}
+							else
+							{
+								showMessage("HP are full!"); // надо поменять
+							}
+							break;
+
+							// key
+						case ITEM_KEY:
+							if (!key)
+							{
+								key = true;
+								o_item->destroy();
+							}
+							else
+							{
+								showMessage("Already have a key!"); // надо поменять
+							}
+							break;
+						}
+
+						break;
+					}
+	}
+
 	// End
 	mouse.move(window.width / 2, window.height / 2);
 	if (keyboard.pressed[VK_ESCAPE]) GM_game = false;
@@ -176,7 +238,7 @@ void GM_OBJECT_o_hero::GM_step()
 
 void GM_OBJECT_o_hero::GM_draw()
 {
-	view.set(x, y, z + height, xDir, yDir, 0);
+	view.set(x, y, z + HEIGHT, xDir, yDir, 0);
 }
 
 uint GM_OBJECT_o_hero::GM_id()
