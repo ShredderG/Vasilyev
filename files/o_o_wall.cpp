@@ -7,8 +7,6 @@ GM_OBJECT_o_wall::GM_OBJECT_o_wall(float GM_x, float GM_y, float GM_z)
 	x = GM_x;
 	y = GM_y;
 	z = GM_z;
-
-	texture = 0;
 }
 
 void GM_OBJECT_o_wall::destroy()
@@ -27,6 +25,20 @@ void GM_OBJECT_o_wall::destroy()
 
 void GM_OBJECT_o_wall::GM_step()
 {
+}
+
+// draw wall
+void GM_OBJECT_o_wall::drawWall(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+	t_interior.set();
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(t_interior.x1[texture], t_interior.y2[texture]); glVertex3f(x1, y1, z1);
+	glTexCoord2f(t_interior.x1[texture], t_interior.y1[texture]); glVertex3f(x1, y1, z2);
+	glTexCoord2f(t_interior.x2[texture], t_interior.y1[texture]); glVertex3f(x2, y2, z2);
+	glTexCoord2f(t_interior.x2[texture], t_interior.y2[texture]); glVertex3f(x2, y2, z1);
+
+	glEnd();
 }
 
 void GM_OBJECT_o_wall::GM_draw()

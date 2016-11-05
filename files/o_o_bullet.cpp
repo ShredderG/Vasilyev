@@ -7,8 +7,6 @@ GM_OBJECT_o_bullet::GM_OBJECT_o_bullet(float GM_x, float GM_y, float GM_z)
 	x = GM_x;
 	y = GM_y;
 	z = GM_z;
-
-	xDir = yDir = 0;
 }
 
 void GM_OBJECT_o_bullet::destroy()
@@ -51,7 +49,7 @@ void GM_OBJECT_o_bullet::GM_step()
 	// collision with door
 	with(o_door)
 	{
-		if (!o_door->opened || o_door->position != 1)
+		if (!o_door->opened || o_door->position < 1)
 			if (x > o_door->x)
 				if (y > o_door->y)
 					if (x < o_door->x + 1)
@@ -62,45 +60,49 @@ void GM_OBJECT_o_bullet::GM_step()
 						}
 	}
 
-	// collision with hero
-	with(o_hero) // на случай, если героя не существует
+	// is it hero bullet?
+	if (!heroBullet)
 	{
-		if (o_hero->hp > 0)
-			if (x > o_hero->x - o_hero->SIZE)
-				if (y > o_hero->y - o_hero->SIZE)
-					if (x < o_hero->x + o_hero->SIZE)
-						if (y < o_hero->y + o_hero->SIZE)
-							if (z > o_hero->z)
-								if (z < o_hero->z + o_hero->HEIGHT)
-								{
-									o_hero->getDamage(DAMAGE);
-									destroy();
-									break;
-								}
+		// collision with hero
+		with(o_hero) // if hero exists
+		{
+			if (o_hero->hp > 0)
+				if (x > o_hero->x - o_hero->SIZE)
+					if (y > o_hero->y - o_hero->SIZE)
+						if (x < o_hero->x + o_hero->SIZE)
+							if (y < o_hero->y + o_hero->SIZE)
+								if (z > o_hero->z)
+									if (z < o_hero->z + o_hero->HEIGHT)
+									{
+										o_hero->getDamage(DAMAGE);
+										destroy();
+										break;
+									}
+		}
 	}
-
-	// collision with enemy
-	with(o_enemy)
+	else
 	{
-		if (o_enemy->hp > 0)
-			if (x > o_enemy->x - o_enemy->SIZE)
-				if (y > o_enemy->y - o_enemy->SIZE)
-					if (x < o_enemy->x + o_enemy->SIZE)
-						if (y < o_enemy->y + o_enemy->SIZE)
-							if (z > o_enemy->z)
-								if (z < o_enemy->z + o_enemy->HEIGHT)
-								{
-									o_enemy->getDamage(DAMAGE);
-									destroy();
-									break;
-								}
+		// collision with enemy
+		with(o_enemy)
+		{
+			if (o_enemy->hp > 0)
+				if (x > o_enemy->x - o_enemy->SIZE)
+					if (y > o_enemy->y - o_enemy->SIZE)
+						if (x < o_enemy->x + o_enemy->SIZE)
+							if (y < o_enemy->y + o_enemy->SIZE)
+								if (z > o_enemy->z)
+									if (z < o_enemy->z + o_enemy->HEIGHT)
+									{
+										o_enemy->getDamage(DAMAGE);
+										destroy();
+										break;
+									}
+		}
 	}
 }
 
 void GM_OBJECT_o_bullet::GM_draw()
 {
-	glDisable(GL_TEXTURE_2D); // можно удалить, если добавить текстуру
-
 	float
 		x1 = x - stepX(SIZE, o_hero->xDir + 90),
 		x2 = x + stepX(SIZE, o_hero->xDir + 90),
@@ -109,16 +111,13 @@ void GM_OBJECT_o_bullet::GM_draw()
 		z1 = z - SIZE,
 		z2 = z + SIZE;
 
-	// текстуру надо добавить
+	t_icons.set();
 	glBegin(GL_QUADS);
-	glColor4f(1, 1, 1, 1);
-	glVertex3f(x1, y1, z1);
-	glVertex3f(x1, y1, z2);
-	glVertex3f(x2, y2, z2);
-	glVertex3f(x2, y2, z1);
+	glTexCoord2f(t_icons.x1[TEXTURE_ICONS_BULLET], t_icons.y1[TEXTURE_ICONS_BULLET]); glVertex3f(x1, y1, z1);
+	glTexCoord2f(t_icons.x1[TEXTURE_ICONS_BULLET], t_icons.y2[TEXTURE_ICONS_BULLET]); glVertex3f(x1, y1, z2);
+	glTexCoord2f(t_icons.x2[TEXTURE_ICONS_BULLET], t_icons.y2[TEXTURE_ICONS_BULLET]); glVertex3f(x2, y2, z2);
+	glTexCoord2f(t_icons.x2[TEXTURE_ICONS_BULLET], t_icons.y1[TEXTURE_ICONS_BULLET]); glVertex3f(x2, y2, z1);
 	glEnd();
-
-	glEnable(GL_TEXTURE_2D); // удалить
 }
 
 uint GM_OBJECT_o_bullet::GM_id()

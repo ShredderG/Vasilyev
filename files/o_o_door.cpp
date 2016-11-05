@@ -7,11 +7,6 @@ GM_OBJECT_o_door::GM_OBJECT_o_door(float GM_x, float GM_y, float GM_z)
 	x = GM_x;
 	y = GM_y;
 	z = GM_z;
-
-	texture = 0;
-	locked = false;
-	opened = false;
-	position = 0;
 }
 
 void GM_OBJECT_o_door::destroy()
@@ -38,6 +33,22 @@ void GM_OBJECT_o_door::GM_step()
 	{
 		if (position > 0) position -= 0.05;
 	}
+
+	texture = locked ? TEXTURE_INTERIOR_DOOR_LOCKED : TEXTURE_INTERIOR_DOOR;
+}
+
+// draw wall
+void GM_OBJECT_o_door::drawWall(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+	t_interior.set();
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(t_interior.x1[texture], t_interior.y2[texture]); glVertex3f(x1, y1, z1);
+	glTexCoord2f(t_interior.x1[texture], t_interior.y1[texture]); glVertex3f(x1, y1, z2);
+	glTexCoord2f(t_interior.x2[texture], t_interior.y1[texture]); glVertex3f(x2, y2, z2);
+	glTexCoord2f(t_interior.x2[texture], t_interior.y2[texture]); glVertex3f(x2, y2, z1);
+
+	glEnd();
 }
 
 void GM_OBJECT_o_door::GM_draw()
@@ -46,7 +57,16 @@ void GM_OBJECT_o_door::GM_draw()
 	drawWall(x + 1, y + 1, z + position, x + 1, y, z + 1 + position);
 	drawWall(x, y + 1, z + position, x + 1, y + 1, z + 1 + position);
 	drawWall(x, y, z + position, x, y + 1, z + 1 + position);
-	// надо низ двери нарисовать еще
+	
+	// ceil
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(t_interior.x1[TEXTURE_INTERIOR_CEIL], t_interior.y1[TEXTURE_INTERIOR_CEIL]); glVertex3f(x, y, z + position);
+	glTexCoord2f(t_interior.x2[TEXTURE_INTERIOR_CEIL], t_interior.y1[TEXTURE_INTERIOR_CEIL]); glVertex3f(x, y + 1, z + position);
+	glTexCoord2f(t_interior.x2[TEXTURE_INTERIOR_CEIL], t_interior.y2[TEXTURE_INTERIOR_CEIL]); glVertex3f(x + 1, y + 1, z + position);
+	glTexCoord2f(t_interior.x1[TEXTURE_INTERIOR_CEIL], t_interior.y2[TEXTURE_INTERIOR_CEIL]); glVertex3f(x + 1, y, z + position);
+
+	glEnd();
 }
 
 uint GM_OBJECT_o_door::GM_id()
