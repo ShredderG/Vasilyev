@@ -14,13 +14,6 @@ struct GM_texture
 	{
 	}
 
-	GM_texture(ushort w, ushort h, ushort x, ushort y, uchar *bytes) :
-		x1(NULL), y1(NULL), x2(NULL), y2(NULL),
-		width(w), height(h), xSize(x), ySize(y),
-		data(bytes), path("")
-	{
-	}
-
 	void load()
 	{
 		if (x1) return;
@@ -29,7 +22,11 @@ struct GM_texture
 		if (path != "")
 		{
 			FILE *f = fopen(path.c_str(), "rb");
-			if (!f) showMessage("asd");
+			if (!f) {
+				showMessage(path + " not found.");
+				GM_game = false;
+				return;
+			}
 			fseek(f, 54, SEEK_SET);
 			uint length = width * height * 3;
 			data = new uchar[length];
