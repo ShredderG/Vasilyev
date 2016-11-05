@@ -1,6 +1,6 @@
 struct GM_OBJECT_o_enemy : public GM_object
 {
-	static const enum stageType
+	enum stageType
 	{
 		STAND,
 		FIRE,
