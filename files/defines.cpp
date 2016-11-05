@@ -7,8 +7,8 @@ typedef unsigned int   uint;
 #define GM_HEIGHT   600
 #define GM_FPS      60
 #define GM_FULL     false
-#define GM_MAXIMIZE false
-#define GM_MINIMIZE false
+#define GM_MAXIMIZE true
+#define GM_MINIMIZE true
 #define GM_MOUSE    false
 #define GM_NOBORDER false
 uint fps = GM_FPS;
