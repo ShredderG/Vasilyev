@@ -8,15 +8,6 @@ GM_OBJECT_o_hero::GM_OBJECT_o_hero(float GM_x, float GM_y, float GM_z)
 	y = GM_y;
 	z = GM_z;
 
-	xDir = 0;
-	yDir = 90;
-	shootDelay = 0;
-
-	hp = HP_MAX;
-	ammo = AMMO_MAX;
-	ammoTotal = 5;
-	key = false;
-
 	mouse.move(window.width / 2, window.height / 2);
 }
 
@@ -48,7 +39,7 @@ bool GM_OBJECT_o_hero::placeFree(float x, float y)
 
 	with(o_door)
 	{
-		if (!o_door->opened || o_door->position != 1)
+		if (!o_door->opened || o_door->position < 1)
 			if (x + SIZE > o_door->x)
 				if (y + SIZE > o_door->y)
 					if (x - SIZE < o_door->x + 1)
@@ -64,12 +55,17 @@ void GM_OBJECT_o_hero::getDamage(int damage)
 {
 	hp -= damage;
 
-	// + red screen
+	o_hud->hit_time = o_hud->HIT_TIME;
 
-	if (hp < 0)
+	if (hp <= 0)
 	{
+		sndPlaySound("sounds/s_death.wav", SND_FILENAME | SND_ASYNC);
 		hp = 0;
-		showMessage("You are dead for good!"); // надо поменять
+		o_hud->message("You are dead for good!");
+	}
+	else
+	{
+		sndPlaySound("sounds/s_damage.wav", SND_FILENAME | SND_ASYNC);
 	}
 }
 
@@ -79,7 +75,7 @@ void GM_OBJECT_o_hero::GM_step()
 	xDir += ((window.width / 2) - mouse.x) / 10.0;
 	yDir += ((window.height / 2) - mouse.y) / 10.0;
 
-	while (xDir < 0)   xDir += 360;
+	while (xDir < 0) xDir += 360;
 	while (xDir >= 360) xDir -= 360;
 	if (yDir < 10)  yDir = 10;
 	if (yDir > 170) yDir = 170;
@@ -117,6 +113,11 @@ void GM_OBJECT_o_hero::GM_step()
 		x += stepX(SPEED, direction);
 		y += stepY(SPEED, direction);
 
+		// bobbing
+		bobbing++;
+		if (bobbing > BOBBING_MAX)
+			bobbing = 0;
+
 		// Collision with wall
 		if (!placeFree(x, y))
 		{
@@ -128,13 +129,32 @@ void GM_OBJECT_o_hero::GM_step()
 			}
 		}
 	}
+	else
+	{
+		// disable bobbing
+		if (bobbing != 0)
+		{
+			if (bobbing < BOBBING_MAX / 2)
+				bobbing--;
+			else
+			{
+				bobbing++;
+				if (bobbing > BOBBING_MAX)
+					bobbing = 0;
+			}
+		}
+	}
+
+	// Delays
+	if (shootDelay > 0) shootDelay--;
+	if (reloadDelay > 0) reloadDelay--;
 
 	// shooting
 	if (mouse.pressed[MOUSE_LEFT])
 	{
-		if (shootDelay <= 0)
+		if (shootDelay <= 0 && reloadDelay <= 0) // can shoot?
 		{
-			if (ammo > 0)
+			if (ammo > 0) // have ammo?
 			{
 				objectCreate(
 					x + stepX(SIZE, xDir, yDir),
@@ -144,13 +164,47 @@ void GM_OBJECT_o_hero::GM_step()
 
 				o_bullet->xDir = xDir;
 				o_bullet->yDir = yDir;
+				o_bullet->heroBullet = true;
 
-				shootDelay = 10;
+				sndPlaySound("sounds/s_shot.wav", SND_FILENAME | SND_ASYNC);
+				shootDelay = SHOOT_DELAY;
 				ammo--;
+			}
+			else
+			{
+				sndPlaySound("sounds/s_noammo.wav", SND_FILENAME | SND_ASYNC);
+				if (ammoTotal > 0) o_hud->message("Reload weapon!");
+				else o_hud->message("No more ammo!");
 			}
 		}
 	}
-	if (shootDelay > 0) shootDelay--;
+
+	// Reloading weapon
+	if (keyboard.pressed['R'])
+	{
+		if (reloadDelay <= 0) // can reload?
+		{
+			if (ammo < AMMO_MAX) // need ammo?
+			{
+				if (ammoTotal != 0) // have ammo?
+				{
+					int ammoHave = ammoTotal;
+					int ammoNeed = AMMO_MAX - ammo;
+					int ammoLoad = (ammoNeed > ammoHave) ? ammoHave : ammoNeed;
+
+					sndPlaySound("sounds/s_reload.wav", SND_FILENAME | SND_ASYNC);
+					ammo += ammoLoad;
+					ammoTotal -= ammoLoad;
+					reloadDelay = RELOAD_DELAY;
+				}
+				else
+				{
+					sndPlaySound("sounds/s_message.wav", SND_FILENAME | SND_ASYNC);
+					o_hud->message("No more ammo!");
+				}
+			}
+		}
+	}
 
 	// opening doors
 	if (keyboard.pressed['E'])
@@ -163,19 +217,28 @@ void GM_OBJECT_o_hero::GM_step()
 
 			if (pointDistance(x, y, dx, dy) < 2.0)
 			{
-				if (o_door->locked)
+				if (!o_door->opened)
 				{
-					if (key)
+					if (o_door->locked)
 					{
-						o_door->locked = !o_door->locked;
-						o_door->opened = !o_door->opened;
-						key = false;
+						if (key)
+						{
+							o_door->locked = !o_door->locked;
+							o_door->opened = !o_door->opened;
+							sndPlaySound("sounds/s_door.wav", SND_FILENAME | SND_ASYNC);
+							key = false;
+						}
+						else
+						{
+							sndPlaySound("sounds/s_denied.wav", SND_FILENAME | SND_ASYNC);
+							o_hud->message("Need key!");
+						}
 					}
-					else showMessage("Need key!"); // надо поменять
-				}
-				else
-				{
-					o_door->opened = !o_door->opened;
+					else
+					{
+						sndPlaySound("sounds/s_door.wav", SND_FILENAME | SND_ASYNC);
+						o_door->opened = !o_door->opened;
+					}
 				}
 				break;
 			}
@@ -195,21 +258,31 @@ void GM_OBJECT_o_hero::GM_step()
 						{
 							// ammo
 						case ITEM_AMMO:
-							ammoTotal += o_item->AMMO;
-							o_item->destroy();
+							if (ammoTotal < AMMO_TOTAL_MAX)
+							{
+								sndPlaySound("sounds/s_ammo.wav", SND_FILENAME | SND_ASYNC);
+								ammoTotal += o_item->AMMO;
+								if (ammoTotal > AMMO_TOTAL_MAX) ammoTotal = AMMO_TOTAL_MAX;
+								o_item->destroy();
+							}
+							else
+							{
+								o_hud->message("Ammo is full!");
+							}
 							break;
 
 							// medkit
 						case ITEM_MEDKIT:
 							if (hp < HP_MAX)
 							{
+								sndPlaySound("sounds/s_medkit.wav", SND_FILENAME | SND_ASYNC);
 								hp += o_item->MEDKIT;
 								if (hp > HP_MAX) hp = HP_MAX;
 								o_item->destroy();
 							}
 							else
 							{
-								showMessage("HP are full!"); // надо поменять
+								o_hud->message("HP are full!");
 							}
 							break;
 
@@ -217,12 +290,13 @@ void GM_OBJECT_o_hero::GM_step()
 						case ITEM_KEY:
 							if (!key)
 							{
+								sndPlaySound("sounds/s_key.wav", SND_FILENAME | SND_ASYNC);
 								key = true;
 								o_item->destroy();
 							}
 							else
 							{
-								showMessage("Already have a key!"); // надо поменять
+								o_hud->message("Already have a key!");
 							}
 							break;
 						}
