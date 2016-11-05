@@ -5,6 +5,7 @@
 // OpenGL
 #pragma comment (lib, "opengl32.lib")
 #pragma comment (lib, "glu32.lib")
+#pragma comment(lib, "winmm.lib")
 
 // Includes
 #include <stdio.h>
@@ -13,10 +14,8 @@
 #include <time.h>
 
 #include <string>
-//#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-//#include <GL/glext.h>
 using namespace std;
 
 // Engine
@@ -52,9 +51,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float timeStep = 1000.0 / fps;
 	int timeNow = clock(), timeSleep, timeStart = timeNow, timeEnd = timeStart + 1000, frame = 0;
 	MSG msg;
-	//genmap("map2.bmp");
-	//genmap("map2x2.bmp");
-	//genmap("map10x10.bmp",10,10);
+
 	// Main cycle
 	while (GM_game)
 	{
@@ -81,7 +78,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			frame = 0;
 			timeStart = timeNow;
 			timeEnd = timeNow + 1000;
-			//window.setTitle(str(fps));
 		}
 	}
 
