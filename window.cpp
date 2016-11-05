@@ -47,7 +47,7 @@ struct GM_window
 		glLoadIdentity();
 
 		// Вычисление соотношения геометрических размеров для окна
-		gluPerspective(60, (float)width / height, 0.01, view.distance);
+		gluPerspective(75, (float)width / height, 0.01, view.distance);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 	}
