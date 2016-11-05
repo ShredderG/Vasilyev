@@ -1,6 +1,5 @@
 void genmap(const char * imagepath)
 {
-	int i;
 	FILE* f = fopen(imagepath, "rb");
 	unsigned char info[54];
 	fread(info, sizeof(unsigned char), 54, f); // read the 54-byte header
