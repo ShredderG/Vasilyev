@@ -1,8 +1,7 @@
 void GM_ROOM_r_start()
 {
-objectCreate(0, 0, 0, o_hero);
-objectCreate(0, 0, 0, o_floor);
-objectCreate(1, 0, 0, o_wall);
+	objectCreate(0, 0, 0, o_hud);
+	genmap("textures/level.bmp");
 }
 
 GM_room
