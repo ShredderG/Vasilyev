@@ -1,62 +1,88 @@
-#include <sstream>
 void genmap(const char * imagepath)
 {
+	int i;
+	FILE* f = fopen(imagepath, "rb");
+	unsigned char info[54];
+	fread(info, sizeof(unsigned char), 54, f); // read the 54-byte header
 
-    int i;
-    FILE* f = fopen(imagepath, "rb");
-    unsigned char info[54];
-    fread(info, sizeof(unsigned char), 54, f); // read the 54-byte header
+	int width = info[18];
+	int height = info[22];
 
-    
-    //const int width = *(int*)&info[18];
-    //const int height = *(int*)&info[22];
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			uchar data[3];
+			fread(data, 3, 1, f);
 
-	const int width = 10;
-	const int height = 10;
+			// floor
+			objectCreate(x, y, 0, o_floor);
 
-    int size = 3 * width * height;
-    unsigned char data[width][height][3];
-    fread(data, 3, width * height, f);
-    fclose(f);
-
-	for (int x = 0; x < width; x++)
-    {
-        for (int y = 0; y < height; y++)
-        {
-			if(data[x][y][2] == 255 && data[x][y][1] == 255 && data[x][y][0] == 255)	
+			// sewer floor
+			if (data[0] == 64 && data[1] == 128 && data[2] == 255)
 			{
-				showMessage("player"); continue;
+				objectCreate(x, y, 0.01, o_floor);
+				o_floor->texture = TEXTURE_INTERIOR_SEWER;
 			}
 
-			if(data[x][y][2] == 0 && data[x][y][1] == 255 && data[x][y][0] == 0)	
+			// wall
+			if (data[0] == 0 && data[1] == 0 && data[2] == 0)
+				objectCreate(x, y, 0, o_wall);
+
+			// wall glass
+			if (data[0] == 255 && data[1] == 255 && data[2] == 0)
 			{
-				showMessage("grass"); continue;
+				objectCreate(x, y, 0, o_wall);
+				o_wall->texture = TEXTURE_INTERIOR_GLASS;
+				objectCreate(x, y, 0.01, o_floor);
+				o_floor->texture = TEXTURE_INTERIOR_PLATE;
 			}
 
-			if(data[x][y][2] == 255 && data[x][y][1] == 0 && data[x][y][0] == 0)	
+			// door
+			if (data[0] == 192 && data[1] == 192 && data[2] == 192)
 			{
-				showMessage("health kit"); continue;
+				objectCreate(x, y, 0, o_door);
+				objectCreate(x, y, 0.01, o_floor);
+				o_floor->texture = TEXTURE_INTERIOR_PLATE;
 			}
 
-			if(data[x][y][2] == 64 && data[x][y][1] == 0 && data[x][y][0] == 0)	
+			// locked door
+			if (data[0] == 128 && data[1] == 128 && data[2] == 128)
 			{
-				showMessage("door"); continue;
+				objectCreate(x, y, 0, o_door);
+				o_door->locked = true;
 			}
 
-			if(data[x][y][2] == 0 && data[x][y][1] == 255 && data[x][y][0] == 255)	
+			// item ammo
+			if (data[0] == 0 && data[1] == 255 && data[2] == 0)
 			{
-				showMessage("enemy #1"); continue;
+				objectCreate(x + 0.5, y + 0.5, 0, o_item);
+				o_item->type = ITEM_AMMO;
 			}
 
-			if(data[x][y][2] == 255 && data[x][y][1] == 255 && data[x][y][0] == 0)	
+			// item medkit
+			if (data[0] == 255 && data[1] == 0 && data[2] == 0)
 			{
-				showMessage("key"); continue;
+				objectCreate(x + 0.5, y + 0.5, 0, o_item);
+				o_item->type = ITEM_MEDKIT;
 			}
 
-			if(data[x][y][2] == 0 && data[x][y][1] == 64 && data[x][y][0] == 0)	
+			// item key
+			if (data[0] == 0 && data[1] == 255 && data[2] == 255)
 			{
-				showMessage("ammo pack"); continue;
+				objectCreate(x + 0.5, y + 0.5, 0, o_item);
+				o_item->type = ITEM_KEY;
 			}
-        }
-    }
+
+			// enemy
+			if (data[0] == 0 && data[1] == 0 && data[2] == 255)
+				objectCreate(x + 0.5, y + 0.5, 0, o_enemy);
+
+			// hero
+			if (data[0] == 255 && data[1] == 0 && data[2] == 255)
+				objectCreate(x + 0.5, y + 0.5, 0, o_hero);
+		}
+	}
+
+	fclose(f);
 }
