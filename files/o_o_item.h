@@ -12,8 +12,8 @@ struct GM_OBJECT_o_item : public GM_object
 
 	static const float SIZE;
 	static const float HEIGHT;
-	static const int AMMO = 10;
-	static const int MEDKIT = 10;
+	static const int AMMO = 12;
+	static const int MEDKIT = 50;
 
 	static int GM_count;
 	GM_OBJECT_o_item(float GM_x, float GM_y, float GM_z);
@@ -21,6 +21,7 @@ struct GM_OBJECT_o_item : public GM_object
 	void GM_step();
 	void GM_draw();
 	uint GM_id();
+	void destructor();
 
 } *o_item = (GM_OBJECT_o_item*)GM_OBJECT_ID_o_item;
 

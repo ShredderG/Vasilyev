@@ -17,6 +17,7 @@ struct GM_OBJECT_o_hud : public GM_object
 	void GM_step();
 	void GM_draw();
 	uint GM_id();
+	void destructor();
 
 	// show message
 	void message(string text_new);

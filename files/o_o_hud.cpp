@@ -9,18 +9,20 @@ GM_OBJECT_o_hud::GM_OBJECT_o_hud(float GM_x, float GM_y, float GM_z)
 	z = GM_z;
 }
 
+void GM_OBJECT_o_hud::destructor()
+{
+	if (o_hud == this)
+	{
+		if (GM_right) if (GM_right->GM_id() == GM_id()) o_hud = (GM_OBJECT_o_hud*)GM_right;
+		if (o_hud == this) o_hud = (GM_OBJECT_o_hud*)GM_id();
+	}
+}
+
 void GM_OBJECT_o_hud::destroy()
 {
 	if (!GM_active) return;
 	GM_count--;
 	GM_active = false;
-
-	if (o_hud == this)
-	{
-		if (GM_left)  if (GM_left->GM_id() == GM_id()) o_hud = (GM_OBJECT_o_hud*)GM_left;
-		if (GM_right) if (GM_right->GM_id() == GM_id()) o_hud = (GM_OBJECT_o_hud*)GM_right;
-		if (o_hud == this) o_hud = (GM_OBJECT_o_hud*)GM_id();
-	}
 }
 
 void GM_OBJECT_o_hud::GM_step()
@@ -78,6 +80,35 @@ void GM_OBJECT_o_hud::drawPic2d(GM_texture &texture, int image, int x, int y, in
 void GM_OBJECT_o_hud::GM_draw()
 {
 	view.set2d(0, 0, window.width, window.height);
+
+	// draw weapon
+	int shiftDelayShoot = (float)o_hero->shootDelay / o_hero->SHOOT_DELAY * 100;
+	int shiftDelayReload = sin((float)o_hero->reloadDelay / o_hero->RELOAD_DELAY * PI) * 300;
+	int shiftBobbing = sin((float)o_hero->bobbing / o_hero->BOBBING_MAX * PI * 2.0) * 20;
+	drawPic2d(t_weapon,
+		o_hero->shootDelay > 7 ? TEXTURE_WEAPON_FIRE : TEXTURE_WEAPON_COLD,
+		window.width - WEAPON_SIZE + shiftDelayShoot + 100,
+		window.height - WEAPON_SIZE + shiftDelayShoot + shiftDelayReload + shiftBobbing + 120,
+		WEAPON_SIZE, WEAPON_SIZE);
+
+	// draw death screen
+	if (o_hero->zDeath > 0)
+	{
+		glDisable(GL_TEXTURE_2D);
+
+		// grey bar
+		glColor4f(1, 0, 0, 0.8 * o_hero->zDeath * 2.0);
+		glBegin(GL_QUADS);
+		glVertex2f(0, 0);
+		glVertex2f(0, window.height);
+		glVertex2f(window.width, window.height);
+		glVertex2f(window.width, 0);
+		glEnd();
+
+		glColor3f(1, 1, 1);
+
+		glEnable(GL_TEXTURE_2D);
+	}
 
 	// red glow when hit
 	if (hit_time > 0)
@@ -167,25 +198,17 @@ void GM_OBJECT_o_hud::GM_draw()
 	}
 
 	// draw ammo text
-	drawText(str(o_hero->ammo) + "/" + str(o_hero->AMMO_MAX),
+	drawText(str(o_hero->ammo) + "/" + str(o_hero->ammoTotal),
 		16 + ICON_SIZE + 16,
 		window.height - FONT_SIZE * 1.5,
 		FONT_SIZE);
 
-	drawText(str(o_hero->ammoTotal),
-		16 + ICON_SIZE + 16,
-		window.height - FONT_SIZE * 2.5,
-		FONT_SIZE_SMALL);
-
-	// draw weapon
-	int shiftDelayShoot = (float)o_hero->shootDelay / o_hero->SHOOT_DELAY * 100;
-	int shiftDelayReload = sin((float)o_hero->reloadDelay / o_hero->RELOAD_DELAY * PI) * 300;
-	int shiftBobbing = sin((float)o_hero->bobbing / o_hero->BOBBING_MAX * PI * 2.0) * 20;
-	drawPic2d(t_weapon,
-		o_hero->shootDelay > 7 ? TEXTURE_WEAPON_FIRE : TEXTURE_WEAPON_COLD,
-		window.width - WEAPON_SIZE + shiftDelayShoot + 100,
-		window.height - WEAPON_SIZE + shiftDelayShoot + shiftDelayReload + shiftBobbing + 120,
-		WEAPON_SIZE, WEAPON_SIZE);
+	// draw aim
+	drawPic2d(t_icons,
+		TEXTURE_ICONS_AIM,
+		window.width / 2 - ICON_SIZE / 4,
+		window.height / 2 - ICON_SIZE / 4,
+		ICON_SIZE / 2, ICON_SIZE / 2);
 
 	view.set3d();
 }

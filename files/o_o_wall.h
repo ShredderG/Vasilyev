@@ -8,6 +8,7 @@ struct GM_OBJECT_o_wall : public GM_object
 	void GM_step();
 	void GM_draw();
 	uint GM_id();
+	void destructor();
 
 	void drawWall(float x1, float y1, float z1, float x2, float y2, float z2);
 

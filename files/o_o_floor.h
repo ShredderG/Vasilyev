@@ -8,6 +8,7 @@ struct GM_OBJECT_o_floor : public GM_object
 	void GM_step();
 	void GM_draw();
 	uint GM_id();
+	void destructor();
 
 } *o_floor = (GM_OBJECT_o_floor*)GM_OBJECT_ID_o_floor;
 

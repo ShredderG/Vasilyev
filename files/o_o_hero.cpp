@@ -11,18 +11,20 @@ GM_OBJECT_o_hero::GM_OBJECT_o_hero(float GM_x, float GM_y, float GM_z)
 	mouse.move(window.width / 2, window.height / 2);
 }
 
+void GM_OBJECT_o_hero::destructor()
+{
+	if (o_hero == this)
+	{
+		if (GM_right) if (GM_right->GM_id() == GM_id()) o_hero = (GM_OBJECT_o_hero*)GM_right;
+		if (o_hero == this) o_hero = (GM_OBJECT_o_hero*)GM_id();
+	}
+}
+
 void GM_OBJECT_o_hero::destroy()
 {
 	if (!GM_active) return;
 	GM_count--;
 	GM_active = false;
-
-	if (o_hero == this)
-	{
-		if (GM_left)  if (GM_left->GM_id() == GM_id()) o_hero = (GM_OBJECT_o_hero*)GM_left;
-		if (GM_right) if (GM_right->GM_id() == GM_id()) o_hero = (GM_OBJECT_o_hero*)GM_right;
-		if (o_hero == this) o_hero = (GM_OBJECT_o_hero*)GM_id();
-	}
 }
 
 // collision with wall or door
@@ -61,7 +63,7 @@ void GM_OBJECT_o_hero::getDamage(int damage)
 	{
 		sndPlaySound("sounds/s_death.wav", SND_FILENAME | SND_ASYNC);
 		hp = 0;
-		o_hud->message("You are dead for good!");
+		o_hud->message("You are dead!");
 	}
 	else
 	{
@@ -71,6 +73,17 @@ void GM_OBJECT_o_hero::getDamage(int damage)
 
 void GM_OBJECT_o_hero::GM_step()
 {
+	// Exit game
+	if (keyboard.pressed[VK_ESCAPE]) GM_game = false;
+
+	// if you are dead
+	if (hp <= 0)
+	{
+		if (zDeath < HEIGHT - 0.1)
+			zDeath += 0.02;
+		return;
+	}
+
 	// Mouse look
 	xDir += ((window.width / 2) - mouse.x) / 10.0;
 	yDir += ((window.height / 2) - mouse.y) / 10.0;
@@ -307,12 +320,11 @@ void GM_OBJECT_o_hero::GM_step()
 
 	// End
 	mouse.move(window.width / 2, window.height / 2);
-	if (keyboard.pressed[VK_ESCAPE]) GM_game = false;
 }
 
 void GM_OBJECT_o_hero::GM_draw()
 {
-	view.set(x, y, z + HEIGHT, xDir, yDir, 0);
+	view.set(x, y, z + HEIGHT - zDeath, xDir, yDir, 0);
 }
 
 uint GM_OBJECT_o_hero::GM_id()

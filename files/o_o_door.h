@@ -11,6 +11,7 @@ struct GM_OBJECT_o_door : public GM_object
 	void GM_step();
 	void GM_draw();
 	uint GM_id();
+	void destructor();
 
 	// draw wall
 	void drawWall(float x1, float y1, float z1, float x2, float y2, float z2);

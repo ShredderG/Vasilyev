@@ -9,18 +9,20 @@ GM_OBJECT_o_door::GM_OBJECT_o_door(float GM_x, float GM_y, float GM_z)
 	z = GM_z;
 }
 
+void GM_OBJECT_o_door::destructor()
+{
+	if (o_door == this)
+	{
+		if (GM_right) if (GM_right->GM_id() == GM_id()) o_door = (GM_OBJECT_o_door*)GM_right;
+		if (o_door == this) o_door = (GM_OBJECT_o_door*)GM_id();
+	}
+}
+
 void GM_OBJECT_o_door::destroy()
 {
 	if (!GM_active) return;
 	GM_count--;
 	GM_active = false;
-
-	if (o_door == this)
-	{
-		if (GM_left)  if (GM_left->GM_id() == GM_id()) o_door = (GM_OBJECT_o_door*)GM_left;
-		if (GM_right) if (GM_right->GM_id() == GM_id()) o_door = (GM_OBJECT_o_door*)GM_right;
-		if (o_door == this) o_door = (GM_OBJECT_o_door*)GM_id();
-	}
 }
 
 void GM_OBJECT_o_door::GM_step()

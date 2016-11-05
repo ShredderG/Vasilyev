@@ -10,14 +10,15 @@ struct GM_OBJECT_o_hero : public GM_object
 		ammoTotal = AMMO_START;
 	bool key = false;
 	int bobbing = 0;
+	float zDeath = 0;
 
 	static const float HEIGHT;
 	static const float SIZE;
 	static const float SPEED;
 	static const int HP_MAX = 100;
 	static const int AMMO_MAX = 12;
-	static const int AMMO_TOTAL_MAX = 24;
-	static const int AMMO_START = 24;
+	static const int AMMO_TOTAL_MAX = 48;
+	static const int AMMO_START = 12;
 	static const int SHOOT_DELAY = 10;
 	static const int RELOAD_DELAY = 20;
 	static const int BOBBING_MAX = 25;
@@ -28,7 +29,8 @@ struct GM_OBJECT_o_hero : public GM_object
 	void GM_step();
 	void GM_draw();
 	uint GM_id();
-
+	void destructor();
+	
 	// collision check
 	bool placeFree(float x, float y);
 

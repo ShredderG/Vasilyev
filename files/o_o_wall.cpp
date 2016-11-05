@@ -9,18 +9,20 @@ GM_OBJECT_o_wall::GM_OBJECT_o_wall(float GM_x, float GM_y, float GM_z)
 	z = GM_z;
 }
 
+void GM_OBJECT_o_wall::destructor()
+{
+	if (o_wall == this)
+	{
+		if (GM_right) if (GM_right->GM_id() == GM_id()) o_wall = (GM_OBJECT_o_wall*)GM_right;
+		if (o_wall == this) o_wall = (GM_OBJECT_o_wall*)GM_id();
+	}
+}
+
 void GM_OBJECT_o_wall::destroy()
 {
 	if (!GM_active) return;
 	GM_count--;
 	GM_active = false;
-
-	if (o_wall == this)
-	{
-		if (GM_left)  if (GM_left->GM_id() == GM_id()) o_wall = (GM_OBJECT_o_wall*)GM_left;
-		if (GM_right) if (GM_right->GM_id() == GM_id()) o_wall = (GM_OBJECT_o_wall*)GM_right;
-		if (o_wall == this) o_wall = (GM_OBJECT_o_wall*)GM_id();
-	}
 }
 
 void GM_OBJECT_o_wall::GM_step()

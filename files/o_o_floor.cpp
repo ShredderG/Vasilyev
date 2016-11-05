@@ -9,18 +9,20 @@ GM_OBJECT_o_floor::GM_OBJECT_o_floor(float GM_x, float GM_y, float GM_z)
 	z = GM_z;
 }
 
+void GM_OBJECT_o_floor::destructor()
+{
+	if (o_floor == this)
+	{
+		if (GM_right) if (GM_right->GM_id() == GM_id()) o_floor = (GM_OBJECT_o_floor*)GM_right;
+		if (o_floor == this) o_floor = (GM_OBJECT_o_floor*)GM_id();
+	}
+}
+
 void GM_OBJECT_o_floor::destroy()
 {
 	if (!GM_active) return;
 	GM_count--;
 	GM_active = false;
-
-	if (o_floor == this)
-	{
-		if (GM_left)  if (GM_left->GM_id() == GM_id()) o_floor = (GM_OBJECT_o_floor*)GM_left;
-		if (GM_right) if (GM_right->GM_id() == GM_id()) o_floor = (GM_OBJECT_o_floor*)GM_right;
-		if (o_floor == this) o_floor = (GM_OBJECT_o_floor*)GM_id();
-	}
 }
 
 void GM_OBJECT_o_floor::GM_step()

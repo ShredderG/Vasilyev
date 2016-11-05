@@ -9,18 +9,20 @@ GM_OBJECT_o_bullet::GM_OBJECT_o_bullet(float GM_x, float GM_y, float GM_z)
 	z = GM_z;
 }
 
+void GM_OBJECT_o_bullet::destructor()
+{
+	if (o_bullet == this)
+	{
+		if (GM_right) if (GM_right->GM_id() == GM_id()) o_bullet = (GM_OBJECT_o_bullet*)GM_right;
+		if (o_bullet == this) o_bullet = (GM_OBJECT_o_bullet*)GM_id();
+	}
+}
+
 void GM_OBJECT_o_bullet::destroy()
 {
 	if (!GM_active) return;
 	GM_count--;
 	GM_active = false;
-
-	if (o_bullet == this)
-	{
-		if (GM_left)  if (GM_left->GM_id() == GM_id()) o_bullet = (GM_OBJECT_o_bullet*)GM_left;
-		if (GM_right) if (GM_right->GM_id() == GM_id()) o_bullet = (GM_OBJECT_o_bullet*)GM_right;
-		if (o_bullet == this) o_bullet = (GM_OBJECT_o_bullet*)GM_id();
-	}
 }
 
 void GM_OBJECT_o_bullet::GM_step()
