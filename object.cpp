@@ -66,6 +66,7 @@ struct GM_object
 	virtual void GM_step() = 0;
 	virtual void GM_draw() = 0;
 	virtual uint GM_id() = 0;
+	virtual void destructor() = 0;
 
 } *GM_list = NULL;
 
@@ -85,7 +86,11 @@ void GM_step()
 		if (ptr->GM_active) ptr->GM_step();
 
 	for (GM_object *ptr = GM_list, *ptr_next = ptr ? ptr->GM_right : NULL; ptr; ptr = ptr_next, ptr_next = ptr ? ptr->GM_right : NULL)
-		if (!ptr->GM_active) delete ptr;
+		if (!ptr->GM_active)
+		{
+			ptr->destructor();
+			delete ptr;
+		}
 
 	keyboard.reset();
 	mouse.reset();
