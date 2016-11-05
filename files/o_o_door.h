@@ -1,21 +1,9 @@
 struct GM_OBJECT_o_door : public GM_object
 {
-	int texture;
-	bool locked;
-	bool opened;
-	float position;
-
-	void drawWall(float x1, float y1, float z1, float x2, float y2, float z2)
-	{
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(t_floor.x1[texture], t_floor.y1[texture]); glVertex3f(x1, y1, z1);
-		glTexCoord2f(t_floor.x2[texture], t_floor.y1[texture]); glVertex3f(x1, y1, z2);
-		glTexCoord2f(t_floor.x2[texture], t_floor.y2[texture]); glVertex3f(x2, y2, z2);
-		glTexCoord2f(t_floor.x1[texture], t_floor.y2[texture]); glVertex3f(x2, y2, z1);
-
-		glEnd();
-	}
+	int texture = TEXTURE_INTERIOR_DOOR;
+	bool locked = false;
+	bool opened = false;
+	float position = 0;
 
 	static int GM_count;
 	GM_OBJECT_o_door(float GM_x, float GM_y, float GM_z);
@@ -24,6 +12,9 @@ struct GM_OBJECT_o_door : public GM_object
 	void GM_draw();
 	uint GM_id();
 
+	// draw wall
+	void drawWall(float x1, float y1, float z1, float x2, float y2, float z2);
+
 } *o_door = (GM_OBJECT_o_door*) GM_OBJECT_ID_o_door;
 
-	int GM_OBJECT_o_door::GM_count;
+int GM_OBJECT_o_door::GM_count = 0;

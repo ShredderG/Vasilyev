@@ -1,4 +1,4 @@
-enum itemType
+enum itemType : unsigned int
 {
 	ITEM_AMMO,
 	ITEM_MEDKIT,
@@ -7,10 +7,13 @@ enum itemType
 
 struct GM_OBJECT_o_item : public GM_object
 {
-	int type;
+	itemType type = ITEM_AMMO; // redefined after creating
+	int angle = 0;
 
-	const int AMMO = 10;
-	const int MEDKIT = 10;
+	static const float SIZE;
+	static const float HEIGHT;
+	static const int AMMO = 10;
+	static const int MEDKIT = 10;
 
 	static int GM_count;
 	GM_OBJECT_o_item(float GM_x, float GM_y, float GM_z);
@@ -21,4 +24,6 @@ struct GM_OBJECT_o_item : public GM_object
 
 } *o_item = (GM_OBJECT_o_item*)GM_OBJECT_ID_o_item;
 
-int GM_OBJECT_o_item::GM_count;
+const float GM_OBJECT_o_item::SIZE = 0.15;
+const float GM_OBJECT_o_item::HEIGHT = 0.3;
+int GM_OBJECT_o_item::GM_count = 0;

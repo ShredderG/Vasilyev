@@ -1,10 +1,13 @@
 struct GM_OBJECT_o_bullet : public GM_object
 {
-	float xDir, yDir; // переопределяются после создания
+	float // redefined after creating
+		xDir = 0,
+		yDir = 0;
+	bool heroBullet = false;
 
-	const float SPEED = 0.1;
-	const float SIZE = 0.05;
-	const int DAMAGE = 10;
+	static const float SPEED;
+	static const float SIZE;
+	static const int DAMAGE = 10;
 
 	static int GM_count;
 	GM_OBJECT_o_bullet(float GM_x, float GM_y, float GM_z);
@@ -15,4 +18,6 @@ struct GM_OBJECT_o_bullet : public GM_object
 
 } *o_bullet = (GM_OBJECT_o_bullet*) GM_OBJECT_ID_o_bullet;
 
-	int GM_OBJECT_o_bullet::GM_count;
+const float GM_OBJECT_o_bullet::SPEED = 0.1;
+const float GM_OBJECT_o_bullet::SIZE = 0.05;
+int GM_OBJECT_o_bullet::GM_count = 0;
